@@ -26,13 +26,7 @@ It performs basic and advanced mathematical operations with a modern and respons
 - CSS3
 - JavaScript (ES6)
 
----
-
-## 📷 Preview
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/5834e746-c54d-4ca5-b820-cc8561da57a1" />
-
-
----
+-
 
 ## 🚀 How to Run
 1. Download or clone the repository
