@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scientific Calculator</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#f8fafc;
+    font-family:'Segoe UI';
+}
+
+.calculator{
+    width:360px;
+    background:#f3f4f6;
+    border-radius:22px;
+    padding:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.12);
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.title{
+    color:#374151;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.modeBtn{
+    border:none;
+    padding:8px 12px;
+    border-radius:10px;
+    cursor:pointer;
+    background:#ec4899;
+    color:white;
+    font-weight:bold;
+}
+
+.display{
+    width:100%;
+    height:65px;
+    border:none;
+    outline:none;
+    border-radius:14px;
+    padding:12px;
+    font-size:24px;
+    text-align:right;
+    margin-bottom:18px;
+    background:white;
+    color:#374151;
+    font-weight:bold;
+}
+
+.buttons{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+}
+
+button{
+    height:52px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:bold;
+    transition:0.15s;
+}
+
+button:hover{
+    transform:scale(1.04);
+}
+
+button:active{
+    transform:scale(0.95);
+}
+
+.num{
+    background:#d1d5db;
+    color:#374151;
+}
+
+.op{
+    background:#f472b6;
+    color:white;
+}
+
+.equal{
+    background:#ec4899;
+    color:white;
+}
+
+.clear{
+    background:#ef4444;
+    color:white;
+}
+
+.special{
+    background:#f9a8d4;
+    color:white;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+    <div class="top">
+        <div class="title">Calculator 🧮 </div>
+        <button class="modeBtn" id="modeBtn"> Mode 🌙</button>
+    </div>
+
+    <input type="text" id="display" class="display" readonly>
+
+    <div class="buttons">
+
+        <button class="clear">C</button>
+        <button class="special">⌫</button>
+        <button class="special">(</button>
+        <button class="special">)</button>
+        <button class="op">/</button>
+
+        <button class="special">sin</button>
+        <button class="special">cos</button>
+        <button class="special">tan</button>
+        <button class="special">log</button>
+        <button class="op">*</button>
+
+        <button class="special">√</button>
+        <button class="special">^</button>
+        <button class="special">π</button>
+        <button class="special">%</button>
+        <button class="op">-</button>
+
+        <button class="num">7</button>
+        <button class="num">8</button>
+        <button class="num">9</button>
+        <button class="special">.</button>
+        <button class="op">+</button>
+
+        <button class="num">4</button>
+        <button class="num">5</button>
+        <button class="num">6</button>
+        <button class="special">Ans</button>
+        <button class="equal">=</button>
+
+        <button class="num" style="grid-column: span 2;">0</button>
+        <button class="num">1</button>
+        <button class="num">2</button>
+        <button class="num">3</button>
+
+    </div>
+
+</div>
+
+<script>
+
+const display = document.getElementById("display");
+
+let current = "";
+let lastAnswer = "";
+
+function updateDisplay(){
+    display.value = current;
+}
+
+document.querySelectorAll("button").forEach(button=>{
+
+    button.addEventListener("click",()=>{
+
+        let value = button.innerText;
+
+        // dark mode
+        if(button.id === "modeBtn"){
+
+            document.body.classList.toggle("dark");
+
+            if(document.body.classList.contains("dark")){
+
+                document.body.style.background = "#111827";
+                document.querySelector(".calculator").style.background = "#1f2937";
+                document.querySelector(".display").style.background = "#374151";
+                document.querySelector(".display").style.color = "white";
+                document.querySelector(".title").style.color = "white";
+
+            }else{
+
+                document.body.style.background = "#f8fafc";
+                document.querySelector(".calculator").style.background = "#f3f4f6";
+                document.querySelector(".display").style.background = "white";
+                document.querySelector(".display").style.color = "#374151";
+                document.querySelector(".title").style.color = "#374151";
+            }
+
+            return;
+        }
+
+        // clear
+        else if(value === "C"){
+            current = "";
+        }
+
+        // delete
+        else if(value === "⌫"){
+            current = current.slice(0,-1);
+        }
+
+        // equal
+        else if(value === "="){
+
+            try{
+
+                let expression = current;
+
+                expression = expression.replaceAll("π", Math.PI);
+                expression = expression.replaceAll("^","**");
+                expression = expression.replaceAll("%","/100");
+
+                // sqrt
+                expression = expression.replace(/√(\d+(\.\d+)?)/g,
+                    "Math.sqrt($1)");
+
+                // sin
+                expression = expression.replace(/sin\((.*?)\)/g,
+                    (_,num)=>`Math.sin((${num}) * Math.PI / 180)`);
+
+                // cos
+                expression = expression.replace(/cos\((.*?)\)/g,
+                    (_,num)=>`Math.cos((${num}) * Math.PI / 180)`);
+
+                // tan
+                expression = expression.replace(/tan\((.*?)\)/g,
+                    (_,num)=>`Math.tan((${num}) * Math.PI / 180)`);
+
+                // log
+                expression = expression.replace(/log\((.*?)\)/g,
+                    "Math.log10($1)");
+
+                lastAnswer = eval(expression);
+
+                current = lastAnswer.toString();
+
+            }
+            catch{
+                current = "Error";
+            }
+
+        }
+
+        // answer
+        else if(value === "Ans"){
+            current += lastAnswer;
+        }
+
+        else{
+
+            if(["sin","cos","tan","log"].includes(value)){
+                current += value + "(";
+            }
+            else{
+                current += value;
+            }
+
+        }
+
+        updateDisplay();
+
+    });
+
+});
+
+// keyboard support
+document.addEventListener("keydown",(e)=>{
+
+    if("0123456789+-*/().".includes(e.key)){
+        current += e.key;
+    }
+
+    else if(e.key === "Enter"){
+        document.querySelector(".equal").click();
+    }
+
+    else if(e.key === "Backspace"){
+        current = current.slice(0,-1);
+    }
+
+    updateDisplay();
+
+});
+
+</script>
+
+</body>
+</html>
